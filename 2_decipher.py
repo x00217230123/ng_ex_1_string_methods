@@ -18,4 +18,35 @@ Similarly, if the number is 5 and the jumbled message is ABC, then the actual me
 
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+encoded = """
+   !!junk-77!! | [3::DW::ok] | [xx::DRSC::bad] |
+   [1::NFFU::ok] | ##nothing## | [5::TQI_QNGWFWD::ok] |
+   [2::OG::ok] | [4::XLI::ok] | [7::WT7::bad] |
+   [6::GZ_7_VS::ok] | [99::IGNORE_ME::bad] | %%noise%%
+"""
 
+alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+import re
+
+fragments = []
+pattern = r'\[(\d+)::([^:]+)::ok\]'
+matches = re.findall(pattern, encoded)
+
+for num_str, jumbled in matches:
+    num = int(num_str)
+    decoded = ''
+    for char in jumbled:
+        if char in alphabet:
+            pos = alphabet.index(char)
+            new_pos = (pos - num) % 26
+            decoded += alphabet[new_pos]
+        elif char == '_':
+            decoded += '_'
+        else:
+            decoded += char
+    fragments.append((num, decoded))
+
+fragments.sort(key=lambda x: x[0])
+final_message = ''.join([frag[1] for frag in fragments])
+
+print('Decoded message:', final_message)
